@@ -1,6 +1,7 @@
-import requests
+# pip install requests, requests-html, bs4
+
+import requests, json
 from bs4 import BeautifulSoup
-import json
 
 class Parsing:
     def __init__(self, src):
@@ -42,13 +43,10 @@ def data(url):
                       '(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     req = requests.get(url, headers=headers)
     src = req.text
-    # with open('index.html', 'w', encoding='utf-8') as f:
-    #     f.write(src)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(src)
     return src
 
 
 url = 'https://ntsk.ru/'
 pars = Parsing(data(url))
-pars.parsing_exchange()
-pars.parsing_weather()
-pars.save_in_json()
