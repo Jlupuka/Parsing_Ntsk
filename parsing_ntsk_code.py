@@ -7,13 +7,13 @@ class Parsing:
     def __init__(self, src):
         self.src = src
         self.soup = BeautifulSoup(self.src, 'lxml')
-        self.dict_ = dict()
+        self.dict_data = dict()
 
     def parsing_exchange(self):
-        articles = self.soup.find('div', class_="exchange")
-        find_USD = articles.find('div', class_="exchange-item down").text.replace(' USD ', '').replace(' ', '')
-        find_EURO = articles.find('div', class_="exchange-item up").text.replace(' EURO ', '').replace(' ', '')
-        self.dict_['USD'], self.dict_['EURO'] = find_USD, find_EURO
+        exchange = self.soup.find('div', class_="exchange").text.replace('\n', '  ')
+        exchange = ''.join(exchange).replace(' КУРС ВАЛЮТ', '').split('   ')
+        exchange = ' '.join(exchange).strip().split('  ')
+        self.dict_data['exchange'] = exchange
 
 
     def parsing_weather(self):
@@ -25,14 +25,15 @@ class Parsing:
         weather_info_acrtive = weather_info_acrtive.replace(': ', '\n').replace('\t', '').split('\n')
         weather_info_acrtive = list(filter(None, weather_info_acrtive))
 
-        self.dict_['Температура сейчас'], self.dict_['Температура ночью'] = now, night
-        self.dict_['Давление'] =  ''.join(weather_info_acrtive[1]).strip()
-        self.dict_['Ветер'] =  ''.join(weather_info_acrtive[3]).strip()
-        self.dict_['Влажность'] = ''.join(weather_info_acrtive[-1]).strip()
+        self.dict_data['Температура сейчас'], self.dict_data['Температура ночью'] = now, night
+        self.dict_data['Давление'] = ''.join(weather_info_acrtive[1]).strip()
+        self.dict_data['Ветер'] = ''.join(weather_info_acrtive[3]).strip()
+        self.dict_data['Влажность'] = ''.join(weather_info_acrtive[-1]).strip()
 
     def save_in_json(self):
         with open('Parse_exchange_and_weather_Ntsk.json', 'w', encoding='utf-8') as f:
-            json.dump(self.dict_, f, indent=4, ensure_ascii=False)
+            json.dump(self.dict_data, f, indent=4, ensure_ascii=False)
+        print(self.dict_data)
         print('Saved!')
 
 
@@ -43,8 +44,8 @@ def data(url):
                       '(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     req = requests.get(url, headers=headers)
     src = req.text
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(src)
+    # with open('index.html', 'w', encoding='utf-8') as f:
+    #     f.write(src)
     return src
 
 
